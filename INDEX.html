@@ -870,10 +870,96 @@ function gerarPDF(d) {
   const repSigDataUrl = hasSigRep ? sigCanvasRep.toDataURL('image/png') : null;
   drawSignatureBlock(repNome, repSubLabel, repSigDataUrl);
 
-  const fileName = `Termo-Apadrinhamento-${d.nome.replace(/\s+/g, '-')}.pdf`;
+  const fileName = `${sanitizeFileName(d.nome)}.pdf`;
   doc.save(fileName);
+
+  const base64Pdf = doc.output('datauristring').split(',')[1];
+  uploadToDrive(fileName, base64Pdf);
+
   showGenMsg('Termo gerado! Confira os downloads do seu celular — o PDF ja esta com sua assinatura.');
 }
+
+/* ---------- Nome de arquivo seguro (sem acentos/espacos/caracteres especiais) ---------- */
+function sanitizeFileName(str) {
+  return str
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/* ---------- Upload automatico do PDF para pasta no Google Drive ---------- */
+/* Cole aqui a URL do seu Web App do Google Apps Script (termina em /exec).
+   Veja instrucoes de como criar em: comentario no final deste arquivo. */
+const DRIVE_UPLOAD_URL = 'COLE_AQUI_A_URL_DO_SEU_WEB_APP';
+
+async function uploadToDrive(filename, base64Pdf) {
+  if (!DRIVE_UPLOAD_URL || DRIVE_UPLOAD_URL.includes('COLE_AQUI')) {
+    console.warn('DRIVE_UPLOAD_URL nao configurada — upload para o Drive ignorado.');
+    return;
+  }
+  try {
+    const res = await fetch(DRIVE_UPLOAD_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // evita preflight CORS
+      body: JSON.stringify({ filename, mimeType: 'application/pdf', base64: base64Pdf }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showGenMsg('Termo gerado, baixado e salvo no Google Drive do Instituto!');
+    } else {
+      console.error('Falha ao salvar no Drive:', data.error);
+      showGenMsg('Termo gerado e baixado. (Nao foi possivel salvar no Drive automaticamente.)');
+    }
+  } catch (err) {
+    console.error('Erro de rede ao enviar para o Drive:', err);
+    showGenMsg('Termo gerado e baixado. (Nao foi possivel salvar no Drive automaticamente.)');
+  }
+}
 </script>
+
+<!--
+=========================================================================
+COMO LIGAR O UPLOAD AUTOMATICO PARA O GOOGLE DRIVE
+=========================================================================
+1) No Google Drive do Instituto, crie (ou escolha) a pasta onde os termos
+   assinados devem cair. Abra a pasta e copie o ID dela na URL:
+   https://drive.google.com/drive/folders/ESTE_TRECHO_E_O_ID
+
+2) Va em https://script.google.com/ -> Novo projeto, apague o conteudo
+   padrao e cole o codigo abaixo:
+
+   function doPost(e) {
+     try {
+       var data = JSON.parse(e.postData.contents);
+       var folder = DriveApp.getFolderById('COLE_AQUI_O_ID_DA_PASTA');
+       var bytes = Utilities.base64Decode(data.base64);
+       var blob = Utilities.newBlob(bytes, data.mimeType || 'application/pdf', data.filename);
+       var file = folder.createFile(blob);
+       return ContentService.createTextOutput(JSON.stringify({
+         ok: true, fileId: file.getId(), url: file.getUrl()
+       })).setMimeType(ContentService.MimeType.JSON);
+     } catch (err) {
+       return ContentService.createTextOutput(JSON.stringify({
+         ok: false, error: String(err)
+       })).setMimeType(ContentService.MimeType.JSON);
+     }
+   }
+
+3) Substitua 'COLE_AQUI_O_ID_DA_PASTA' pelo ID copiado no passo 1.
+
+4) Clique em Implantar -> Nova implantacao -> tipo "App da Web".
+   - Executar como: Eu (sua conta)
+   - Quem tem acesso: Qualquer pessoa
+   Implante e autorize as permissoes pedidas (é a mesma tela de
+   permissao do DriveApp que ja apareceu em outras integracoes suas).
+
+5) Copie a URL gerada (termina em /exec) e cole no HTML, substituindo:
+   const DRIVE_UPLOAD_URL = 'COLE_AQUI_A_URL_DO_SEU_WEB_APP';
+
+Pronto: cada termo gerado sera baixado no celular/PC de quem preencheu
+E enviado automaticamente para essa pasta do Drive do Instituto.
+=========================================================================
+-->
+
 </body>
 </html>
