@@ -890,7 +890,7 @@ function sanitizeFileName(str) {
 /* ---------- Upload automatico do PDF para pasta no Google Drive ---------- */
 /* Cole aqui a URL do seu Web App do Google Apps Script (termina em /exec).
    Veja instrucoes de como criar em: comentario no final deste arquivo. */
-const DRIVE_UPLOAD_URL = 'COLE_AQUI_A_URL_DO_SEU_WEB_APP';
+const DRIVE_UPLOAD_URL = 'https://script.google.com/macros/s/AKfycbztdP43Cs4v27QQq5ycVcqwO-WYfgjpdfjgf3GQtxmR1nvvv0C5CdIjgm88ORZZDtEiYg/exec';
 
 async function uploadToDrive(filename, base64Pdf) {
   if (!DRIVE_UPLOAD_URL || DRIVE_UPLOAD_URL.includes('COLE_AQUI')) {
