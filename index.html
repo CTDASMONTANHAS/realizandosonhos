@@ -147,6 +147,8 @@ html,body{height:100%;overflow:hidden;background:var(--k);font-family:var(--font
 .form-grid label.span2{grid-column:span 2;}
 .form-grid input,.form-grid select{border:1.5px solid var(--k);border-radius:10px;padding:11px 12px;font-size:16px;font-family:var(--font-body);font-weight:500;background:#fff;color:#000;}
 .form-grid input:focus,.form-grid select:focus{outline:none;box-shadow:0 0 0 2px var(--k);}
+.upper-field{text-transform:uppercase;}
+.upper-field::placeholder{text-transform:none;}
 .sig-block{display:flex;flex-direction:column;gap:8px;}
 .sig-label{font-size:.8rem;font-weight:700;}
 .sig-label span{font-weight:500;color:var(--g3);}
@@ -177,7 +179,6 @@ html,body{height:100%;overflow:hidden;background:var(--k);font-family:var(--font
 .navbtn{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.85);color:#fff;border:none;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);touch-action:manipulation;transition:background .2s,transform .2s;}
 .navbtn:hover,.navbtn:active{transform:scale(1.08);}
 .counter{position:fixed;top:calc(18px + env(safe-area-inset-top));right:calc(22px + env(safe-area-inset-right));font-size:.8rem;font-weight:700;z-index:50;background:rgba(255,255,255,.9);padding:5px 12px;border-radius:99px;border:1px solid var(--k);transition:background .3s ease,color .3s ease;}
-.exit{position:fixed;top:calc(18px + env(safe-area-inset-top));left:calc(22px + env(safe-area-inset-left));z-index:50;font-size:.76rem;color:var(--g3);text-decoration:none;font-weight:600;}
 .hint{position:fixed;bottom:calc(70px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:.72rem;color:rgba(0,0,0,.4);z-index:40;pointer-events:none;transition:opacity .6s ease;}
 .dark ~ .hint{color:rgba(255,255,255,.5);}
 
@@ -196,9 +197,8 @@ html,body{height:100%;overflow:hidden;background:var(--k);font-family:var(--font
 <body>
 
 <div class="progress" id="progress"></div>
-<a class="exit" href="index.html">&larr; Voltar ao site</a>
 <div class="counter" id="counter">01 / 13</div>
-<div class="hint" id="hint">Use as setas do teclado, clique ou arraste para navegar</div>
+<div class="hint" id="hint">Use as setas do teclado ou arraste para navegar</div>
 
 <div class="deck" id="deck">
 
@@ -353,10 +353,10 @@ html,body{height:100%;overflow:hidden;background:var(--k);font-family:var(--font
       <p class="rv" style="--i:2;">Preencha seus dados, escolha o plano e assine o Termo de Adesão direto pelo celular.</p></div>
     <form id="pForm" class="cta-form rv" style="--i:3;" onsubmit="return false;">
       <div class="form-grid">
-        <label class="span2">Nome completo<input type="text" id="fNome" autocomplete="name" required/></label>
+        <label class="span2">Nome completo<input type="text" id="fNome" class="upper-field" autocomplete="name" required/></label>
         <label>CPF<input type="text" id="fCpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" required/></label>
-        <label>RG<input type="text" id="fRg" required/></label>
-        <label>Nacionalidade<input type="text" id="fNac" value="Brasileira" required/></label>
+        <label>RG<input type="text" id="fRg" class="upper-field"/></label>
+        <label>Nacionalidade<input type="text" id="fNac" class="upper-field" value="BRASILEIRA" required/></label>
         <label>Estado civil
           <select id="fEstadoCivil" required>
             <option value="">Selecione</option>
@@ -369,8 +369,8 @@ html,body{height:100%;overflow:hidden;background:var(--k);font-family:var(--font
         </label>
         <label>Telefone / WhatsApp<input type="tel" id="fTel" inputmode="tel" autocomplete="tel" required/></label>
         <label class="span2">E-mail<input type="email" id="fEmail" autocomplete="email" required/></label>
-        <label class="span2">Endereço completo<input type="text" id="fEndereco" autocomplete="street-address" placeholder="Rua, número, bairro, cidade/UF, CEP" required/></label>
-        <label>Cidade/UF (para o foro)<input type="text" id="fCidade" autocomplete="address-level2" required/></label>
+        <label class="span2">Endereço completo<input type="text" id="fEndereco" class="upper-field" autocomplete="street-address" placeholder="Rua, número, bairro, cidade/UF, CEP" required/></label>
+        <label>Cidade/UF (para o foro)<input type="text" id="fCidade" class="upper-field" autocomplete="address-level2" required/></label>
         <label>Plano de apadrinhamento
           <select id="fPlano" required>
             <option value="150">Padrinho do Sonho — R$ 150/mês</option>
@@ -400,7 +400,7 @@ html,body{height:100%;overflow:hidden;background:var(--k);font-family:var(--font
       <div class="sig-block no-swipe" id="repBlock">
         <div class="sig-label">Assinatura do representante do Instituto <span>(opcional — preencha se o representante estiver presente)</span></div>
         <label style="display:flex;flex-direction:column;gap:6px;font-size:.8rem;font-weight:700;max-width:360px;margin-bottom:6px;">Nome do representante
-          <input type="text" id="fRepNome" placeholder="Nome do(a) representante"/>
+          <input type="text" id="fRepNome" class="upper-field" placeholder="Nome do(a) representante"/>
         </label>
         <canvas id="sigPadRep" class="no-swipe"></canvas>
         <button type="button" class="link-btn" id="clearSigRep">Limpar assinatura do representante</button>
@@ -527,13 +527,6 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'End') goTo(total - 1);
 });
 
-document.getElementById('deck').addEventListener('click', (e) => {
-  if (e.target.closest('a, button, .tier, input, textarea, select, label, .no-swipe')) return;
-  const x = e.clientX / window.innerWidth;
-  if (x < 0.18) goTo(current - 1);
-  else if (x > 0.82) goTo(current + 1);
-});
-
 let dragStartX = null;
 let dragStartY = null;
 function isNoDragTarget(el) {
@@ -616,6 +609,16 @@ document.getElementById('fCpf').addEventListener('input', (e) => {
   let v = e.target.value.replace(/\D/g, '').slice(0, 11);
   v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
   e.target.value = v;
+});
+
+/* ---------- Forcar caixa alta (valor real, nao so visual) nos campos de texto ---------- */
+document.querySelectorAll('.upper-field').forEach((el) => {
+  el.value = el.value.toUpperCase();
+  el.addEventListener('input', () => {
+    const pos = el.selectionStart;
+    el.value = el.value.toUpperCase();
+    if (pos !== null && el.setSelectionRange) el.setSelectionRange(pos, pos);
+  });
 });
 
 /* ---------- Signature pad (mouse + touch) ---------- */
@@ -724,17 +727,17 @@ document.getElementById('genBtn').addEventListener('click', () => {
   if (!hasSig) { showGenMsg('Assine no campo de assinatura antes de gerar o termo.'); return; }
 
   const d = {
-    nome: document.getElementById('fNome').value.trim(),
+    nome: document.getElementById('fNome').value.trim().toUpperCase(),
     cpf: document.getElementById('fCpf').value.trim(),
-    rg: document.getElementById('fRg').value.trim(),
-    nacionalidade: document.getElementById('fNac').value.trim(),
+    rg: document.getElementById('fRg').value.trim().toUpperCase(),
+    nacionalidade: document.getElementById('fNac').value.trim().toUpperCase(),
     estadoCivil: document.getElementById('fEstadoCivil').value,
-    endereco: document.getElementById('fEndereco').value.trim(),
-    cidade: document.getElementById('fCidade').value.trim(),
+    endereco: document.getElementById('fEndereco').value.trim().toUpperCase(),
+    cidade: document.getElementById('fCidade').value.trim().toUpperCase(),
     valor: document.getElementById('fPlano').selectedOptions[0].textContent,
     pagamento: document.getElementById('fPagamento').value,
     dia: document.getElementById('fDia').value,
-    repNome: document.getElementById('fRepNome').value.trim(),
+    repNome: document.getElementById('fRepNome').value.trim().toUpperCase(),
   };
   gerarPDF(d);
 });
@@ -873,10 +876,17 @@ function gerarPDF(d) {
   const fileName = `${sanitizeFileName(d.nome)}.pdf`;
   doc.save(fileName);
 
+  const pdfBlob = doc.output('blob');
+  const blobUrl = URL.createObjectURL(pdfBlob);
+  const opened = window.open(blobUrl, '_blank');
+  if (!opened) {
+    console.warn('O navegador bloqueou a abertura automatica do PDF (pop-up). O arquivo continua baixado normalmente.');
+  }
+
   const base64Pdf = doc.output('datauristring').split(',')[1];
   uploadToDrive(fileName, base64Pdf);
 
-  showGenMsg('Termo gerado! Confira os downloads do seu celular — o PDF ja esta com sua assinatura.');
+  showGenMsg('Termo gerado, baixado e aberto! O PDF ja esta com sua assinatura.');
 }
 
 /* ---------- Nome de arquivo seguro (sem acentos/espacos/caracteres especiais) ---------- */
@@ -890,7 +900,7 @@ function sanitizeFileName(str) {
 /* ---------- Upload automatico do PDF para pasta no Google Drive ---------- */
 /* Cole aqui a URL do seu Web App do Google Apps Script (termina em /exec).
    Veja instrucoes de como criar em: comentario no final deste arquivo. */
-const DRIVE_UPLOAD_URL = 'https://script.google.com/macros/s/AKfycbztdP43Cs4v27QQq5ycVcqwO-WYfgjpdfjgf3GQtxmR1nvvv0C5CdIjgm88ORZZDtEiYg/exec';
+const DRIVE_UPLOAD_URL = 'COLE_AQUI_A_URL_DO_SEU_WEB_APP';
 
 async function uploadToDrive(filename, base64Pdf) {
   if (!DRIVE_UPLOAD_URL || DRIVE_UPLOAD_URL.includes('COLE_AQUI')) {
@@ -905,14 +915,14 @@ async function uploadToDrive(filename, base64Pdf) {
     });
     const data = await res.json();
     if (data.ok) {
-      showGenMsg('Termo gerado, baixado e salvo no Google Drive do Instituto!');
+      showGenMsg('Termo gerado, baixado, aberto e salvo no Google Drive do Instituto!');
     } else {
       console.error('Falha ao salvar no Drive:', data.error);
-      showGenMsg('Termo gerado e baixado. (Nao foi possivel salvar no Drive automaticamente.)');
+      showGenMsg('Termo gerado, baixado e aberto. (Nao foi possivel salvar no Drive automaticamente.)');
     }
   } catch (err) {
     console.error('Erro de rede ao enviar para o Drive:', err);
-    showGenMsg('Termo gerado e baixado. (Nao foi possivel salvar no Drive automaticamente.)');
+    showGenMsg('Termo gerado, baixado e aberto. (Nao foi possivel salvar no Drive automaticamente.)');
   }
 }
 </script>
